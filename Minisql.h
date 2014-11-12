@@ -44,6 +44,7 @@ public:
 	bool isUnique = false;
 
 	Attribute(){}
+	Attribute(string name) :name(name){}
 	Attribute(string name, TYPE type, int length, bool isPrimaryKey = false, bool isUnique = false) :name(name), type(type), length(length), isPrimaryKey(isPrimaryKey), isUnique(isUnique){}
 };
 
@@ -72,7 +73,7 @@ public:
 	string primaryKey;						// 主键名字
 	//int freeNum = 0;						// 有几条被删除的记录
 	vector<Attribute> attributes;			// 指向元数据链表的指针
-	vector<Attribute>::iterator AttriItor;	// Attribute的iterator
+	//vector<Attribute>::iterator AttriItor;	// Attribute的iterator
 	//vector<string> data;					// 指向数据链表的指针
 	//long dataBlockInFile = -1;			// data开头在file中的块的位置（每张表的数据一定是从一块的开头开始）
 	//vector<string> emptyList;				// 指向等待删除链表的指针（这东西到底干吗用）
@@ -87,6 +88,7 @@ class SQLstatement
 public:
 	STATEMENT_TYPE type;
 	string tableName;
+	string indexName;
 	vector<Attribute> attributes;
 	vector<Condition> conditions;
 	//vector<RELATION_TYPE> relations;
@@ -96,6 +98,8 @@ public:
 	SQLstatement(string SQL);
 	~SQLstatement();
 	void outputinfo();
+	Condition genCondition(string exp);
+	RELATION_TYPE getRelationType(string oper);
 	STATEMENT_TYPE identify(string type_code);
 };
 #endif
