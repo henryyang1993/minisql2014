@@ -1,4 +1,5 @@
 #include "MiniSQL.h"
+#include "Record_Manager.h"
 #include "Interpreter.h"
 #include "API_Module.h"
 #include "Catalog_Manager.h"
@@ -20,6 +21,7 @@ int main(void)
 	cout << "\t\t*************************************************" << endl;
 	cout << "Type HELP; for instructions." << endl;
 	cout << endl;
+	cm.read_TableInfo();
 
 	while(1)
 	{

@@ -9,6 +9,9 @@
 #include <direct.h>
 #include <algorithm>
 #include <vector>
+#include <map>
+
+
 using namespace std;
 
 #define FILE_COUNTER 1
@@ -16,7 +19,9 @@ using namespace std;
 #define ATTR_INFO_LENGTH 20
 #define FILE_HEAD_LENGTH 31
 
-enum TYPE { INT = 0, FLOAT = 1, CHAR = 2 };
+typedef map< string, vector<string> > SelectReturnList;
+
+enum TYPE { MYINT = 0, MYFLOAT = 1, MYCHAR = 2 };
 enum RELATION_TYPE { EQUAL, NOT_EQUAL, GREATER, GREATER_EQUAL, SMALLER, SMALLER_EQUAL, AND, OR};
 enum STATEMENT_TYPE { CREATE_DATABASE, CREATE_TABLE, CREATE_INDEX, DROP_TABLE, DROP_INDEX, DROP_DATABASE, SELECT, SELECT_WHERE, INSERT, DELETE, DELETE_WHERE, USE, EXECFILE, QUIT, HELP, ILLEGAL};
 
@@ -38,14 +43,16 @@ public:
 	friend class Table;
 	string name = "";
 	string indexName = "";      //index名
-	TYPE type = INT;
+	TYPE type = MYINT;
 	int length = 0;
 	bool isPrimaryKey = false;
 	bool isUnique = false;
 
 	Attribute(){}
+	Attribute(const Attribute & from) :name(from.name), indexName(from.indexName), type(from.type), length(from.length), isPrimaryKey(from.isPrimaryKey), isUnique(from.isUnique){}
 	Attribute(string name) :name(name){}
 	Attribute(string name, TYPE type, int length, bool isPrimaryKey = false, bool isUnique = false) :name(name), type(type), length(length), isPrimaryKey(isPrimaryKey), isUnique(isUnique){}
+	~Attribute(){}
 };
 
 
@@ -59,6 +66,7 @@ public:
 
 	Condition(){}
 	Condition(Attribute attribute, string value, RELATION_TYPE relationType) :attribute(attribute), value(value), relationType(relationType){}
+	~Condition(){}
 };
 
 //定义表信息
@@ -80,6 +88,7 @@ public:
 
 	Table(){}
 	Table(string name, string primaryKey) :name(name), primaryKey(primaryKey){}
+	~Table(){}
 };
 
 // 语句类
