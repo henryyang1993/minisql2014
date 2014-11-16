@@ -45,13 +45,13 @@ bool CatalogManager::API_Catalog(SQLstatement &sql)
 		Table *t = findTable(sql.tableName);
 		if (t){
 			// µ÷index¡¢record
-			string tn = t->name;
+			msg = t->name;
 			if (dropTable(t)){
-				cout << tn << " dropped successfully." << endl;
+				cout << msg << " dropped successfully." << endl;
 				return true;
 			}
 			else{
-				return true;
+				return false;
 			}
 		}
 		else{
@@ -278,7 +278,7 @@ void CatalogManager::update_tableNum(bool add)
 bool CatalogManager::checkType(Attribute *a, string v)
 {
 	TYPE vt;
-	if (v.find("'") == 0)
+	if ((v.find("'") == 0) && (v.find_last_of("'") == v.length() - 1))
 		vt = TYPE::MYCHAR;
 	else if (v.find('.') != string::npos)
 		vt = TYPE::MYFLOAT;
