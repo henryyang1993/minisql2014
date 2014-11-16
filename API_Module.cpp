@@ -1,9 +1,13 @@
 #include "API_Module.h"
 #include "Catalog_Manager.h"
 #include "Interpreter.h"
+#include "Buffer_Manager.h"
+#include "Record_Manager.h"
 
 extern CatalogManager cm;
-
+extern BufferManager bm;
+extern RecordManager rm;
+extern bool quitFlag;
 void APIMoudule::API(SQLstatement &s)
 {
 	if (s.type == CREATE_TABLE){
@@ -25,6 +29,7 @@ void APIMoudule::API(SQLstatement &s)
 	else if (s.type == DROP_TABLE){
 		if (cm.API_Catalog(s)){
 			// 调index和record
+			rm.dropTable(*cm.findTable(s.tableName));
 		}
 		else{
 			cout << "drop table failed" << endl;
@@ -42,6 +47,8 @@ void APIMoudule::API(SQLstatement &s)
 		if (cm.API_Catalog(s)){
 			cout << "right select statement." << endl;
 			// 调index和record
+			int resultCount = rm.selectWithoutwhere(*cm.findTable(s.tableName), s.attributes);
+			rm.outputMap(resultCount);
 		}
 		else{
 			cout << "select failed." << endl;
@@ -51,6 +58,8 @@ void APIMoudule::API(SQLstatement &s)
 		if (cm.API_Catalog(s)){
 			cout << "right select where statement." << endl;
 			// 调index和record
+			int resultCount = rm.selectWithwhere(*cm.findTable(s.tableName), s.attributes, s.conditions);
+			rm.outputMap(resultCount);
 		}
 		else{
 			cout << "select failed." << endl;
@@ -60,27 +69,30 @@ void APIMoudule::API(SQLstatement &s)
 		if (cm.API_Catalog(s)){
 			cout << "right insert statement." << endl;
 			// 调record和index
+			rm.insertValue(*cm.findTable(s.tableName), s.content);
 		}
 		else{
 			cout << "insert failed." << endl;
 		}
 	}
-	else if (s.type == DELETE){
+	else if (s.type == MYDELETE){
 		if (cm.API_Catalog(s)){
 			cout << "right delete statement." << endl;
 			// 调record和index
+			rm.deleteWithoutwhere(*cm.findTable(s.tableName));
 		}
 		else{
-			cout << "insert failed." << endl;
+			cout << "delete failed." << endl;
 		}
 	}
 	else if (s.type == DELETE_WHERE){
 		if (cm.API_Catalog(s)){
 			cout << "right delete where statement." << endl;
 			// 调record和index
+			rm.deleteWithwhere(*cm.findTable(s.tableName), s.conditions);
 		}
 		else{
-			cout << "insert failed." << endl;
+			cout << "delete failed." << endl;
 		}
 	}
 	else if (s.type == EXECFILE){
@@ -108,7 +120,8 @@ void APIMoudule::API(SQLstatement &s)
 		}
 	}
 	else if (s.type == QUIT){
-		exit(0);
+		quitFlag = true;
+		// 保存表信息
 	}
 	else if (s.type == HELP){
 		getHelp();
