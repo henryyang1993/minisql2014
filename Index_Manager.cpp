@@ -39,6 +39,8 @@ void IndexManager::Create_Index(string indexName, Attribute attribute)
 		else
 			KeyTypeCount = attribute.length;
 
+		indexName = "./im/"+indexName;
+
 		LPCSTR relative = indexName.c_str();
 
 		CFile file(relative ,CFile::modeCreate | CFile::modeReadWrite);
@@ -62,6 +64,7 @@ void IndexManager::Create_Index(string indexName, Attribute attribute)
 
 void IndexManager::Drop_Index(string indexName)
 {
+	indexName = "./im/"+indexName;
 
 	LPCSTR relative = indexName.c_str();
 
@@ -141,6 +144,8 @@ void IndexManager::Insert_Index(Table *Table, string s, int block, int position)
 				KeyTypeCount = 1;
 			else
 				KeyTypeCount = iter->length;
+
+			indexName = "./im/"+indexName;
 
 			LPCSTR relative = indexName.c_str();
 
@@ -228,6 +233,8 @@ bool IndexManager::Find_Index(Attribute attribute, string s, int& block, int& po
 			KeyTypeCount = 1;
 		else
 			KeyTypeCount = attribute.length;
+
+		indexName = "./im/"+indexName;
 
 		LPCSTR relative = indexName.c_str();
 

@@ -48,9 +48,7 @@ public:
 
 
 	bool FindValue(void* pValue, int& Block, int& Offset);  //查找B树中key值相同的key对应的pointer所指向的地址
-	//bool FindValueBigger(void* pValue, record& Record);           //查找B树中key值更大的记录地址
-	//bool FindValueSmaller(void* pValue, record& Record);        //查找B树中key值更小的记录地址
-	//bool FindValueBetween(void* pBValue, void* pSValue, record& Record);   //查找B树中key值介于所给2者之间的记录地址
+
 
 	
 	void SetRoot(int Block,int Offset)            //设置根节点地址
