@@ -297,7 +297,7 @@ void CatalogManager::update_tableNum(bool add)
 bool CatalogManager::checkType(Attribute *a, string v)
 {
 	TYPE vt;
-	if ((v.find("'") == 0) && (v.find_last_of("'") == v.length() - 1))
+	if ((v.find("'") == 0) && (v.find_last_of("'") == v.length() - 1) && (v.length() - 2 <= a->length))
 		vt = TYPE::MYCHAR;
 	else if (v.find('.') != string::npos)
 		vt = TYPE::MYFLOAT;
@@ -612,4 +612,15 @@ void CatalogManager::update_indexInfo()
 	for (iter = indexList.begin(); iter != indexList.end(); iter++){
 		save_indexInfo(&(*iter), add);
 	}
+}
+
+Attribute* CatalogManager::getAttribute(Table *t, string in)
+{
+	vector<Attribute>::iterator iter;
+	for (iter = t->attributes.begin(); iter != t->attributes.end(); iter++){
+		if (iter->indexName == in){
+			return &(*iter);
+		}
+	}
+	return NULL;
 }

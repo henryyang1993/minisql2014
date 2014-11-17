@@ -3,9 +3,7 @@
 
 #define EMPTY '@'
 
-
 #include "MiniSQL.h"
-
 
 enum PointerType{ FATHER, LEFT, RIGHT };
 
@@ -70,6 +68,8 @@ public:
 template <class KEY>
 class IndexManager{
 public:
+	IndexManager(){}
+	~IndexManager(){}
 	void createIndex(Table & tableinfo, Index & indexinfo);
 	InnerData<KEY> insertValue(Index& indexinfor, Data<KEY> node, int blockOffset = 0);
 	char * selectEqual(const Table& tableinfor, const Index& indexinfor, KEY key, int blockOffset = 0);
