@@ -26,20 +26,30 @@ enum TYPE { MYINT = 0, MYFLOAT = 1, MYCHAR = 2 };
 enum RELATION_TYPE { EQUAL, NOT_EQUAL, GREATER, GREATER_EQUAL, SMALLER, SMALLER_EQUAL, AND, OR};
 enum STATEMENT_TYPE { CREATE_DATABASE, CREATE_TABLE, CREATE_INDEX, DROP_TABLE, DROP_INDEX, DROP_DATABASE, SELECT, SELECT_WHERE, INSERT, MYDELETE, DELETE_WHERE, USE, EXECFILE, QUIT, HELP, ILLEGAL};
 
+//定义表的索引节点信息
+struct index_info
+{
+	string index_name;
+	int length;
+	char type;
+	long offset;
+	string value;
+};
+
 //定义属性信息
 class Attribute
 {
 public:
 	friend class CatalogManager;
 	friend class Table;
-	string name = "";
-	string indexName = "";      //index名
-	TYPE type = MYINT;
-	int length = 0;
-	bool isPrimaryKey = false;
-	bool isUnique = false;
+	string name;
+	string indexName;   //index名
+	TYPE type;
+	int length;
+	bool isPrimaryKey;
+	bool isUnique;
 
-	Attribute(){}
+	Attribute():name(""),indexName(""),type(MYINT),length(0),isPrimaryKey(false),isUnique(false){}
 	Attribute(const Attribute & from) :name(from.name), indexName(from.indexName), type(from.type), length(from.length), isPrimaryKey(from.isPrimaryKey), isUnique(from.isUnique){}
 	Attribute(string name) :name(name){}
 	Attribute(string name, TYPE type, int length, bool isPrimaryKey = false, bool isUnique = false) :name(name), type(type), length(length), isPrimaryKey(isPrimaryKey), isUnique(isUnique){}
@@ -65,10 +75,10 @@ class Table
 {
 public:
 	string name;							// 表名
-	int blockNum = 0;						// 在name.table中占用的block数
-	int recordNum = 0;						// 记录条数
-	int attriNum = 0;						// 属性数
-	int tupleLength = 0;					// 每条记录的长度
+	int blockNum;						// 在name.table中占用的block数
+	int recordNum;						// 记录条数
+	int attriNum;						// 属性数
+	int tupleLength;					// 每条记录的长度
 	string primaryKey;						// 主键名字
 	//int freeNum = 0;						// 有几条被删除的记录
 	vector<Attribute> attributes;			// 指向元数据链表的指针
@@ -77,7 +87,7 @@ public:
 	//long dataBlockInFile = -1;			// data开头在file中的块的位置（每张表的数据一定是从一块的开头开始）
 	//vector<string> emptyList;				// 指向等待删除链表的指针（这东西到底干吗用）
 
-	Table(){}
+	Table():blockNum(0),recordNum(0),attriNum(0),tupleLength(0){}
 	Table(string name, string primaryKey) :name(name), primaryKey(primaryKey){}
 	~Table(){}
 };
@@ -114,5 +124,12 @@ public:
 	int columnLength;
 	int IndexOffset;
 	Index() :IndexOffset(0){}
+};
+
+// 插入位置
+class insertPos{
+public:
+	int bufferNUM;
+	int position;
 };
 #endif

@@ -23,12 +23,6 @@ public:
 	char getvalue(int pos);
 };
 
-class insertPos{
-public:
-	int bufferNUM;
-	int position;
-};
-
 class BufferManager{
 public:
 	BufferManager();

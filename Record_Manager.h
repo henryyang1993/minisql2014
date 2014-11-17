@@ -21,7 +21,7 @@ public:
 	int findIndexOf(const vector<Attribute> & attributes, const Condition & condition);
 	int copyinto(char * buffer, const char * from, int start, int length);
 	bool createTable(Table & table);
-	bool insertValue(Table & table, const string & values);
+	bool insertValue(Table & table, const string & values,insertPos &ip);
 	bool dropTable(string & tableName);
 	int selectWithwhere(Table & table, const vector<Attribute> & attributes, const vector<Condition> & conditions);
 	int selectWithoutwhere(Table & table, const vector<Attribute> & attributes);

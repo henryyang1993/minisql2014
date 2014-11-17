@@ -3,14 +3,12 @@
 #include "Interpreter.h"
 #include "Buffer_Manager.h"
 #include "Record_Manager.h"
-#include "Index_Manager.cpp"
+#include "Index_Manager.h"
 
 extern CatalogManager cm;
 RecordManager rm;
-IndexManager<int> imInt;
-IndexManager<float> imFloat;
-IndexManager<string> imString
-;
+IndexManager im;
+extern BufferManager bm;
 extern bool quitFlag;
 void APIMoudule::API(SQLstatement &s)
 {
@@ -24,22 +22,17 @@ void APIMoudule::API(SQLstatement &s)
 	}
 	else if (s.type == CREATE_INDEX){
 		if (cm.API_Catalog(s)){
-			// 调index
-			Index *i = cm.findIndex(s.indexName);
 			Table *t = cm.findTable(s.tableName);
-			TYPE type = cm.getAttributebyi(t, i->index_name)->type;
-			if (type == MYINT){
-				imInt.createIndex(*t, *i);
+			Attribute *a;
+			vector<Attribute>::iterator iter;
+			for(iter = t->attributes.begin(); iter != t->attributes.end(); iter++){
+				if(iter->name == s.attributes.data()->name)
+				{
+					a = &(*iter);
+				}
 			}
-			else if (type == MYFLOAT){
-				imFloat.createIndex(*t, *i);
-			}
-			else if (type == MYCHAR){
-				imString.createIndex(*t, *i);
-			}
-			else{
-				cout << "wrong type." << endl;
-			}
+			im.Create_Index(s.indexName, *a);
+			// 调index
 		}
 		else{
 			cout << "create index failed" << endl;
@@ -57,6 +50,7 @@ void APIMoudule::API(SQLstatement &s)
 	else if (s.type == DROP_INDEX){
 		if (cm.API_Catalog(s)){
 			// 调index
+			im.Drop_Index(s.indexName);
 		}
 		else{
 			cout << "drop index failed" << endl;
@@ -69,8 +63,8 @@ void APIMoudule::API(SQLstatement &s)
 			int resultCount = rm.selectWithoutwhere(*cm.findTable(s.tableName), s.attributes);
 			if (resultCount)
 			{
-				rm.outputMap(resultCount);
 				cout << resultCount << " row(s) selected:" << endl;
+				rm.outputMap(resultCount);
 			}
 			else
 			{
@@ -85,15 +79,68 @@ void APIMoudule::API(SQLstatement &s)
 		if (cm.API_Catalog(s)){
 			//cout << "right select where statement." << endl;
 			// 调index和record
-			int resultCount = rm.selectWithwhere(*cm.findTable(s.tableName), s.attributes, s.conditions);
-			if (resultCount)
-			{
-				rm.outputMap(resultCount);
-				cout << resultCount << " row(s) selected:" << endl;
-			}
-			else
-			{
-				cout << "no match row" << endl;
+			Table *t = cm.findTable(s.tableName);
+			Index *i;
+			if(i = cm.findIndex(cm.getAttributebya(t, s.conditions[0].attribute.name)->indexName)){
+				Attribute *a = cm.getAttributebyi(t, i->index_name);
+				insertPos ip;
+				if(im.Find_Index(*a, s.conditions[0].value, ip.bufferNUM, ip.position)){
+					string value="";
+					vector<Attribute>::iterator iter;
+					if(s.attributes[0].name =="*"){
+						for(iter = t->attributes.begin(); iter != t->attributes.end(); iter++){
+							cout << iter->name <<  "\t\t";
+						}
+						cout << endl;
+						vector<Attribute>::iterator iter2;
+						int l = 1;
+						for(iter2 = t->attributes.begin(); iter2 != t->attributes.end(); iter2 ++){
+							value = rm.toString(bm.bufferBlock[ip.bufferNUM].value+ip.position+l, iter2->length, iter2->type); 
+							if(value.length()>5){
+								cout << value <<  "\t";
+							}else{
+								cout << value <<  "\t\t";
+							}
+							l += iter2->length;
+						}
+					}
+					else{
+						for(iter = s.attributes.begin(); iter != s.attributes.end(); iter++){
+							cout << iter->name <<  "\t\t";
+						}
+						cout << endl;
+						int l=1;
+						for(iter = t->attributes.begin(); iter != t->attributes.end(); iter ++){
+							vector<Attribute>::iterator iter2;
+							for(iter2 = s.attributes.begin(); iter2 != s.attributes.end(); iter2++){
+								if(iter->name == iter2->name){
+									value = rm.toString(bm.bufferBlock[ip.bufferNUM].value+ip.position+l, iter->length, iter->type); 
+									if(value.length()>5){
+										cout << value <<  "\t";
+									}else{
+										cout << value <<  "\t\t";
+									}
+									break;
+								}
+							}
+							l += iter->length;
+						}
+					}
+					cout << endl << "1 row seleted." << endl;
+					return;
+				}
+
+			}else{
+				int resultCount = rm.selectWithwhere(*cm.findTable(s.tableName), s.attributes, s.conditions);
+				if (resultCount)
+				{
+					cout << resultCount << " row(s) selected:" << endl;
+					rm.outputMap(resultCount);
+				}
+				else
+				{
+					cout << "no match row" << endl;
+				}
 			}
 		}
 		else{
@@ -104,9 +151,12 @@ void APIMoudule::API(SQLstatement &s)
 		if (cm.API_Catalog(s)){
 			//cout << "right insert statement." << endl;
 			// 调record和index
-			if (rm.insertValue(*cm.findTable(s.tableName), s.content))
+			insertPos ip;
+			if (rm.insertValue(*cm.findTable(s.tableName), s.content, ip))
 			{
 				cout << "inserted" << endl;
+				
+				im.Insert_Index(cm.findTable(s.tableName), s.content, ip.bufferNUM, ip.position); 
 			}
 			else
 			{

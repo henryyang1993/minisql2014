@@ -87,7 +87,7 @@ int RecordManager::deleteWithoutwhere(Table & table)
 	return count;
 }
 
-bool RecordManager::insertValue(Table & table, const string & values)
+bool RecordManager::insertValue(Table & table, const string & values, insertPos &insertPos)
 {
 	bm.scanIn(table);
 	int writeLength = table.tupleLength + 1;
@@ -139,7 +139,7 @@ bool RecordManager::insertValue(Table & table, const string & values)
 	// 维护table的recordNum
 	if (ConstraintCheck(tempData, table))
 	{
-		insertPos insertPos = bm.getInsertPosition(table);
+		insertPos = bm.getInsertPosition(table);
 		int bufferIndex = insertPos.bufferNUM;
 		int blockIndex = insertPos.position;
 		for (int i = 0; i < writeLength; i++)
