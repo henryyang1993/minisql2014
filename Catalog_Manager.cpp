@@ -1,6 +1,8 @@
 #include "Catalog_Manager.h"
 #include "dirent.h"
+#include "Index_Manager.h"
 
+extern IndexManager im;
 bool CatalogManager::API_Catalog(SQLstatement &sql)
 {
 	if (sql.type == CREATE_TABLE){
@@ -51,6 +53,7 @@ bool CatalogManager::API_Catalog(SQLstatement &sql)
 		Table *t = findTable(sql.tableName);
 		if (t){
 			// µ÷index¡¢record
+			im.Drop_Table_Index(t);
 			msg = t->name;
 			if (dropTable(t)){
 				cout << msg << " dropped successfully." << endl;

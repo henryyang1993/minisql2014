@@ -8,7 +8,7 @@ BufferManager bm;
 bool RecordManager::dropTable(string & tableName)
 {
 	bm.setInvalid(tableName + ".table");
-	remove((tableName + ".table").c_str());
+	remove(("./bm/"+tableName + ".table").c_str());
 	return true;
 }
 
@@ -638,13 +638,17 @@ void RecordManager::outputMap(int tupleCount)
 	//cout << endl;
 
 	for (auto& result : attributeValuesMap) {
-		cout << result.first << "\t";
+		cout << result.first << "\t\t";
 	}
 	cout << endl;
 	for (int i = 0; i < tupleCount; i++)
 	{
 		for (auto& result : attributeValuesMap) {
-			cout << result.second[i] << "\t";
+			if(result.second[i].length()>5){
+				cout << result.second[i] << "\t";
+			}else{
+				cout << result.second[i] << "\t\t";
+			}
 		}
 		cout << endl;
 	}

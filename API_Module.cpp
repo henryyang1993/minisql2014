@@ -63,8 +63,8 @@ void APIMoudule::API(SQLstatement &s)
 			int resultCount = rm.selectWithoutwhere(*cm.findTable(s.tableName), s.attributes);
 			if (resultCount)
 			{
-				cout << resultCount << " row(s) selected:" << endl;
 				rm.outputMap(resultCount);
+				cout << resultCount << " row(s) selected:" << endl;
 			}
 			else
 			{
@@ -81,12 +81,12 @@ void APIMoudule::API(SQLstatement &s)
 			// µ÷indexºÍrecord
 			Table *t = cm.findTable(s.tableName);
 			Index *i;
-			if(i = cm.findIndex(cm.getAttributebya(t, s.conditions[0].attribute.name)->indexName)){
+			if((i = cm.findIndex(cm.getAttributebya(t, s.conditions[0].attribute.name)->indexName)) && (s.conditions[0].relationType == EQUAL)){
 				Attribute *a = cm.getAttributebyi(t, i->index_name);
 				insertPos ip;
+				string value="";
+				vector<Attribute>::iterator iter;
 				if(im.Find_Index(*a, s.conditions[0].value, ip.bufferNUM, ip.position)){
-					string value="";
-					vector<Attribute>::iterator iter;
 					if(s.attributes[0].name =="*"){
 						for(iter = t->attributes.begin(); iter != t->attributes.end(); iter++){
 							cout << iter->name <<  "\t\t";
@@ -129,13 +129,12 @@ void APIMoudule::API(SQLstatement &s)
 					cout << endl << "1 row seleted." << endl;
 					return;
 				}
-
 			}else{
 				int resultCount = rm.selectWithwhere(*cm.findTable(s.tableName), s.attributes, s.conditions);
 				if (resultCount)
 				{
-					cout << resultCount << " row(s) selected:" << endl;
 					rm.outputMap(resultCount);
+					cout << resultCount << " row(s) selected:" << endl;
 				}
 				else
 				{

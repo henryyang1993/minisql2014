@@ -2,10 +2,9 @@
 #define __BufferManager_H__
 
 #define BLOCKSIZE 4096
-#define MAXBLOCKNUMBER 1000
+#define MAXBLOCKNUMBER 1024
 
 #include "MiniSQL.h"
-#include "Index_Manager.h"
 
 class buffer{
 	friend class BufferManager;
@@ -22,6 +21,7 @@ public:
 	string getvalue(int start, int end);
 	char getvalue(int pos);
 };
+
 
 class BufferManager{
 public:

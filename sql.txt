@@ -6,12 +6,34 @@ a3 char(20),
 primary key(a2)
 );
 create index i1 on t1(a1);
-insert into t1 values(1, 1.0, 'abc');
+insert into t1 values(2, 15.0, 'hgabc');
+insert into t1 values(35, 1.608, 'fb');
+insert into t1 values(46, 166.707, 'hkkkkkkkkkkkk');
 select * from t1;
+
+quit;
+
 select a1,a2 from t1;
-select a1 from t1 where a1=1;
-select a1, a2 from t1 where a1>1 and a3<'bbb';
+select * from t1 where a1=2;
+select a1, a3 from t1 where a1>2 and a3<'hi';
+select * from t1 where a1<>35;
+delete from t1 where a1>40;
+select * from t1;
+
 delete from t1;
-delete from t1 where a1<>1 and a2>1.9;
+select * from t1;
+
 drop index i1;
 drop table t1;
+
+create table t1
+(
+a1 int unique,
+a2 float,
+a3 char(20),
+primary key(a2)
+);
+create index i1 on t1(a1);
+execfile insert1.sql;
+select a1,a3 from t1 where a1=266;
+

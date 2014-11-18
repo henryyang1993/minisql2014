@@ -47,7 +47,7 @@ RELATION_TYPE SQLstatement::getRelationType(string oper)
 	else if (oper == "<") return SMALLER;
 	else if (oper == ">=") return GREATER_EQUAL;
 	else if (oper == "<=") return SMALLER_EQUAL;
-	else if (oper == "!=") return NOT_EQUAL;
+	else if (oper == "<>") return NOT_EQUAL;
 	// 有个坑 ： 操作符不合法没有处理；					TO-DO
 }
 Condition SQLstatement::genCondition(string exp)
